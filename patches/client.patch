@@ -1,0 +1,876 @@
+--- net/minecraft/src/WorldGenTrees.java
++++ net/minecraft/src/WorldGenTrees.java
+@@ -62,7 +62,7 @@
+ 					for(var16 = 0; var16 < var6; ++var16) {
+ 						var10 = var1.getBlockId(var3, var4 + var16, var5);
+ 						if(var10 == 0 || var10 == Block.leaves.blockID) {
+-							var1.setBlock(var3, var4 + var16, var5, Block.wood.blockID);
++							var1.setBlockAndMetadata(var3, var4 + var16, var5, Block.wood.blockID, 0);
+ 						}
+ 					}
+ 
+--- net/minecraft/src/WorldGenTaiga2.java
++++ net/minecraft/src/WorldGenTaiga2.java
+@@ -1,5 +1,7 @@
+ package net.minecraft.src;
+ 
++import net.minecraft.mod.ModBlocks;
++
+ import java.util.Random;
+ 
+ public class WorldGenTaiga2 extends WorldGenerator {
+@@ -79,7 +81,7 @@
+ 					for(var16 = 0; var16 < var6 - var15; ++var16) {
+ 						var17 = var1.getBlockId(var3, var4 + var16, var5);
+ 						if(var17 == 0 || var17 == Block.leaves.blockID) {
+-							var1.setBlockAndMetadata(var3, var4 + var16, var5, Block.wood.blockID, 1);
++							var1.setBlockAndMetadata(var3, var4 + var16, var5, ModBlocks.spruceLog.blockID, 1);
+ 						}
+ 					}
+ 
+--- /dev/null
++++ net/minecraft/mod/ModBlocks.java
+@@ -1,0 +1,166 @@
++package net.minecraft.mod;
++
++import net.minecraft.src.*;
++
++public class ModBlocks {
++    // Log blocks
++    public static Block spruceLog = new BlockLog(97, 116, 212)
++            .setHardness(2.0F)
++            .setResistance(5.0F)
++            .setStepSound(Block.soundWoodFootstep)
++            .setBlockName("spruceLog");
++
++    public static Block birchLog = new BlockLog(98, 117, 211)
++            .setHardness(2.0F)
++            .setResistance(5.0F)
++            .setStepSound(Block.soundWoodFootstep)
++            .setBlockName("birchLog");
++
++    // Plank blocks
++    public static Block sprucePlanks = new Block(99, 226, Material.wood)
++            .setHardness(2.0F)
++            .setResistance(5.0F)
++            .setStepSound(Block.soundWoodFootstep)
++            .setBlockName("sprucePlanks");
++
++    public static Block birchPlanks = new Block(100, 227, Material.wood)
++            .setHardness(2.0F)
++            .setResistance(5.0F)
++            .setStepSound(Block.soundWoodFootstep)
++            .setBlockName("birchPlanks");
++
++    public static void addRecipes(CraftingManager craftingManager) {
++        // Log to planks conversion
++        craftingManager.addRecipe(new ItemStack(sprucePlanks, 4), new Object[]{
++                "#",
++                '#', spruceLog
++        });
++
++        craftingManager.addRecipe(new ItemStack(birchPlanks, 4), new Object[]{
++                "#",
++                '#', birchLog
++        });
++
++        // Add recipes for items that can be made from different wood types
++        addWoodRecipes(craftingManager, sprucePlanks);
++        addWoodRecipes(craftingManager, birchPlanks);
++    }
++
++    private static void addWoodRecipes(CraftingManager craftingManager, Block planks) {
++        // Sticks from planks
++        addWoodTools(craftingManager, planks);
++
++        craftingManager.addRecipe(new ItemStack(Block.blockBed), new Object[]{
++                "###",
++                "XXX",
++                '#', planks,
++                'X', Block.cloth // Assuming wool is defined in your imports
++        });
++
++
++        craftingManager.addRecipe(new ItemStack(Item.stick, 4), new Object[]{
++                "#",
++                "#",
++                '#', planks
++        });
++
++        // Crafting table from planks
++        craftingManager.addRecipe(new ItemStack(Block.workbench), new Object[]{
++                "##",
++                "##",
++                '#', planks
++        });
++
++        // Chest from planks
++        craftingManager.addRecipe(new ItemStack(Block.chest), new Object[]{
++                "###",
++                "# #",
++                "###",
++                '#', planks
++        });
++
++        // Door from planks
++        craftingManager.addRecipe(new ItemStack(Item.doorWood), new Object[]{
++                "##",
++                "##",
++                "##",
++                '#', planks
++        });
++
++        // Fence from planks
++        craftingManager.addRecipe(new ItemStack(Block.fence, 2), new Object[]{
++                "###",
++                "###",
++                '#', Item.stick
++        });
++
++        // Boat from planks
++        craftingManager.addRecipe(new ItemStack(Item.boat), new Object[]{
++                "# #",
++                "###",
++                '#', planks
++        });
++
++        // Sign from planks
++        craftingManager.addRecipe(new ItemStack(Item.sign), new Object[]{
++                "###",
++                "###",
++                " X ",
++                '#', planks,
++                'X', Item.stick
++        });
++
++        // Trapdoor from planks
++        craftingManager.addRecipe(new ItemStack(Block.trapdoor, 2), new Object[]{
++                "###",
++                "###",
++                '#', planks
++        });
++
++        // Stair from planks
++        craftingManager.addRecipe(new ItemStack(Block.stairCompactPlanks, 4), new Object[]{
++                "#  ",
++                "## ",
++                "###",
++                '#', planks
++        });
++    }
++
++    private static void addWoodTools(CraftingManager craftingManager, Block planks) {
++        // Wooden Pickaxe
++        craftingManager.addRecipe(new ItemStack(Item.pickaxeWood), new Object[]{
++                "###",
++                " X ",
++                " X ",
++                '#', planks,
++                'X', Item.stick
++        });
++
++        // Wooden Axe
++        craftingManager.addRecipe(new ItemStack(Item.axeWood), new Object[]{
++                "## ",
++                "#X ",
++                " X ",
++                '#', planks,
++                'X', Item.stick
++        });
++
++        // Wooden Shovel
++        craftingManager.addRecipe(new ItemStack(Item.shovelWood), new Object[]{
++                "#  ",
++                "X  ",
++                "X  ",
++                '#', planks,
++                'X', Item.stick
++        });
++
++        // Wooden Hoe
++        craftingManager.addRecipe(new ItemStack(Item.hoeWood), new Object[]{
++                "## ",
++                " X ",
++                " X ",
++                '#', planks,
++                'X', Item.stick
++        });
++    }
++}
+--- net/minecraft/src/EntityChicken.java
++++ net/minecraft/src/EntityChicken.java
+@@ -1,5 +1,8 @@
+ package net.minecraft.src;
+ 
++import net.minecraft.mod.ModItems;
++import net.minecraft.mod.ModUtils;
++
+ public class EntityChicken extends EntityAnimal {
+ 	public boolean field_753_a = false;
+ 	public float field_752_b = 0.0F;
+@@ -72,6 +75,9 @@
+ 	}
+ 
+ 	protected int getDropItemId() {
+-		return Item.feather.shiftedIndex;
++		return ModUtils.getRandomFromArray(new int[]{
++				Item.feather.shiftedIndex,
++				ModItems.chickenRaw.shiftedIndex
++		});
+ 	}
+ }
+--- /dev/null
++++ net/minecraft/mod/ModUtils.java
+@@ -1,0 +1,11 @@
++package net.minecraft.mod;
++
++public class ModUtils
++{
++    public static int getRandomFromArray(int[] array) {
++        if (array == null || array.length == 0) {
++            throw new IllegalArgumentException("Array cannot be null or empty");
++        }
++        return array[(int)(Math.random() * array.length)];
++    }
++}
+--- net/minecraft/src/ItemAxe.java
++++ net/minecraft/src/ItemAxe.java
+@@ -1,7 +1,9 @@
+ package net.minecraft.src;
+ 
++import net.minecraft.mod.ModBlocks;
++
+ public class ItemAxe extends ItemTool {
+-	private static Block[] blocksEffectiveAgainst = new Block[]{Block.planks, Block.bookShelf, Block.wood, Block.chest};
++	private static Block[] blocksEffectiveAgainst = new Block[]{Block.planks, Block.bookShelf, Block.wood, Block.chest, ModBlocks.spruceLog, ModBlocks.birchLog, ModBlocks.birchPlanks, ModBlocks.sprucePlanks};
+ 
+ 	protected ItemAxe(int var1, EnumToolMaterial var2) {
+ 		super(var1, 3, var2, blocksEffectiveAgainst);
+--- net/minecraft/src/Block.java
++++ net/minecraft/src/Block.java
+@@ -37,7 +37,7 @@
+ 	public static final Block oreGold = (new BlockOre(14, 32)).setHardness(3.0F).setResistance(5.0F).setStepSound(soundStoneFootstep).setBlockName("oreGold");
+ 	public static final Block oreIron = (new BlockOre(15, 33)).setHardness(3.0F).setResistance(5.0F).setStepSound(soundStoneFootstep).setBlockName("oreIron");
+ 	public static final Block oreCoal = (new BlockOre(16, 34)).setHardness(3.0F).setResistance(5.0F).setStepSound(soundStoneFootstep).setBlockName("oreCoal");
+-	public static final Block wood = (new BlockLog(17)).setHardness(2.0F).setStepSound(soundWoodFootstep).setBlockName("log").disableNeighborNotifyOnMetadataChange();
++	public static final Block wood = (new BlockLog(17, 20 ,21)).setHardness(2.0F).setStepSound(soundWoodFootstep).setBlockName("log").disableNeighborNotifyOnMetadataChange();
+ 	public static final BlockLeaves leaves = (BlockLeaves)(new BlockLeaves(18, 52)).setHardness(0.2F).setLightOpacity(1).setStepSound(soundGrassFootstep).setBlockName("leaves").disableStats().disableNeighborNotifyOnMetadataChange();
+ 	public static final Block sponge = (new BlockSponge(19)).setHardness(0.6F).setStepSound(soundGrassFootstep).setBlockName("sponge");
+ 	public static final Block glass = (new BlockGlass(20, 49, Material.glass, false)).setHardness(0.3F).setStepSound(soundGlassFootstep).setBlockName("glass");
+@@ -155,7 +155,7 @@
+ 		}
+ 	}
+ 
+-	protected Block disableNeighborNotifyOnMetadataChange() {
++	public Block disableNeighborNotifyOnMetadataChange() {
+ 		field_28032_t[this.blockID] = true;
+ 		return this;
+ 	}
+@@ -163,12 +163,12 @@
+ 	protected void initializeBlock() {
+ 	}
+ 
+-	protected Block(int var1, int var2, Material var3) {
++	public Block(int var1, int var2, Material var3) {
+ 		this(var1, var3);
+ 		this.blockIndexInTexture = var2;
+ 	}
+ 
+-	protected Block setStepSound(StepSound var1) {
++	public Block setStepSound(StepSound var1) {
+ 		this.stepSound = var1;
+ 		return this;
+ 	}
+@@ -183,7 +183,7 @@
+ 		return this;
+ 	}
+ 
+-	protected Block setResistance(float var1) {
++	public Block setResistance(float var1) {
+ 		this.blockResistance = var1 * 3.0F;
+ 		return this;
+ 	}
+@@ -196,7 +196,7 @@
+ 		return 0;
+ 	}
+ 
+-	protected Block setHardness(float var1) {
++	public Block setHardness(float var1) {
+ 		this.blockHardness = var1;
+ 		if(this.blockResistance < var1 * 5.0F) {
+ 			this.blockResistance = var1 * 5.0F;
+--- net/minecraft/src/BlockLeaves.java
++++ net/minecraft/src/BlockLeaves.java
+@@ -1,5 +1,7 @@
+ package net.minecraft.src;
+ 
++import net.minecraft.mod.ModBlocks;
++
+ import java.util.Random;
+ 
+ public class BlockLeaves extends BlockLeavesBase {
+@@ -118,7 +120,7 @@
+ 						for(var13 = -var7; var13 <= var7; ++var13) {
+ 							for(var14 = -var7; var14 <= var7; ++var14) {
+ 								var15 = var1.getBlockId(var2 + var12, var3 + var13, var4 + var14);
+-								if(var15 == Block.wood.blockID) {
++								if(var15 == Block.wood.blockID || var15 == ModBlocks.birchLog.blockID || var15 == ModBlocks.spruceLog.blockID ) {
+ 									this.adjacentTreeBlocks[(var12 + var11) * var10 + (var13 + var11) * var9 + var14 + var11] = 0;
+ 								} else if(var15 == Block.leaves.blockID) {
+ 									this.adjacentTreeBlocks[(var12 + var11) * var10 + (var13 + var11) * var9 + var14 + var11] = -2;
+--- /dev/null
++++ net/minecraft/mod/LogWindow.java
+@@ -1,0 +1,58 @@
++package net.minecraft.mod;
++import javax.swing.*;
++import java.awt.*;
++import java.io.PrintStream;
++import java.io.OutputStream;
++
++public class LogWindow extends JFrame {
++    private JTextArea textArea;
++    private PrintStream originalOut;
++
++    public LogWindow() {
++        // Save original System.out
++        originalOut = System.out;
++
++        // Setup window
++        setTitle("Mod Log");
++        setSize(600, 400);
++        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
++
++        // Create text area
++        textArea = new JTextArea();
++        textArea.setEditable(false);
++        textArea.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 12));
++        JScrollPane scrollPane = new JScrollPane(textArea);
++        add(scrollPane);
++
++        // Create custom output stream
++        PrintStream printStream = new PrintStream(new OutputStream() {
++            @Override
++            public void write(int b) {
++                // Write to original System.out
++                originalOut.write(b);
++
++                // Append to text area
++                textArea.append(String.valueOf((char)b));
++                // Auto scroll to bottom
++                textArea.setCaretPosition(textArea.getDocument().getLength());
++            }
++        });
++
++        // Redirect System.out to our PrintStream
++        System.setOut(printStream);
++
++        // Show window
++        setVisible(true);
++    }
++
++    public void restore() {
++        // Restore original System.out when closing
++        System.setOut(originalOut);
++    }
++
++    // Call this when mod is shutting down
++    public void dispose() {
++        restore();
++        super.dispose();
++    }
++}
+--- net/minecraft/src/EntitySheep.java
++++ net/minecraft/src/EntitySheep.java
+@@ -1,5 +1,8 @@
+ package net.minecraft.src;
+ 
++import net.minecraft.mod.ModItems;
++import net.minecraft.mod.ModUtils;
++
+ import java.util.Random;
+ 
+ public class EntitySheep extends EntityAnimal {
+@@ -28,7 +31,10 @@
+ 	}
+ 
+ 	protected int getDropItemId() {
+-		return Block.cloth.blockID;
++		return ModUtils.getRandomFromArray(new int[] {
++				Block.cloth.blockID,
++				ModItems.muttonRaw.shiftedIndex
++		});
+ 	}
+ 
+ 	public boolean interact(EntityPlayer var1) {
+--- net/minecraft/src/WorldGenTaiga1.java
++++ net/minecraft/src/WorldGenTaiga1.java
+@@ -1,5 +1,7 @@
+ package net.minecraft.src;
+ 
++import net.minecraft.mod.ModBlocks;
++
+ import java.util.Random;
+ 
+ public class WorldGenTaiga1 extends WorldGenerator {
+@@ -67,7 +69,7 @@
+ 					for(var13 = 0; var13 < var6 - 1; ++var13) {
+ 						var14 = var1.getBlockId(var3, var4 + var13, var5);
+ 						if(var14 == 0 || var14 == Block.leaves.blockID) {
+-							var1.setBlockAndMetadata(var3, var4 + var13, var5, Block.wood.blockID, 1);
++							var1.setBlockAndMetadata(var3, var4 + var13, var5, ModBlocks.spruceLog.blockID, 1);
+ 						}
+ 					}
+ 
+--- net/minecraft/src/BlockLog.java
++++ net/minecraft/src/BlockLog.java
+@@ -3,49 +3,55 @@
+ import java.util.Random;
+ 
+ public class BlockLog extends Block {
+-	protected BlockLog(int var1) {
+-		super(var1, Material.wood);
+-		this.blockIndexInTexture = 20;
+-	}
+-
+-	public int quantityDropped(Random var1) {
+-		return 1;
+-	}
+-
+-	public int idDropped(int var1, Random var2) {
+-		return Block.wood.blockID;
+-	}
+-
+-	public void harvestBlock(World var1, EntityPlayer var2, int var3, int var4, int var5, int var6) {
+-		super.harvestBlock(var1, var2, var3, var4, var5, var6);
+-	}
+-
+-	public void onBlockRemoval(World var1, int var2, int var3, int var4) {
+-		byte var5 = 4;
+-		int var6 = var5 + 1;
+-		if(var1.checkChunksExist(var2 - var6, var3 - var6, var4 - var6, var2 + var6, var3 + var6, var4 + var6)) {
+-			for(int var7 = -var5; var7 <= var5; ++var7) {
+-				for(int var8 = -var5; var8 <= var5; ++var8) {
+-					for(int var9 = -var5; var9 <= var5; ++var9) {
+-						int var10 = var1.getBlockId(var2 + var7, var3 + var8, var4 + var9);
+-						if(var10 == Block.leaves.blockID) {
+-							int var11 = var1.getBlockMetadata(var2 + var7, var3 + var8, var4 + var9);
+-							if((var11 & 8) == 0) {
+-								var1.setBlockMetadata(var2 + var7, var3 + var8, var4 + var9, var11 | 8);
++	private static final int OAK = 0;
++	private static final int SPRUCE = 1;
++	private static final int BIRCH = 2;
++	private int topTextureID;
++	public BlockLog(int id, int textureIndex, int topTextureID) {
++		super(id, Material.wood);
++		this.blockIndexInTexture = textureIndex;
++		this.topTextureID = topTextureID;// Default to oak side texture
++	}
++
++	public int quantityDropped(Random random) {
++		return 1;  // Drop 1 log
++	}
++
++    public void harvestBlock(World world, EntityPlayer player, int x, int y, int z, int metadata) {
++		super.harvestBlock(world, player, x, y, z, metadata);
++	}
++
++	public void onBlockRemoval(World world, int x, int y, int z) {
++		byte radius = 4;
++		int range = radius + 1;
++
++		if(world.checkChunksExist(x - range, y - range, z - range, x + range, y + range, z + range)) {
++			for(int dx = -radius; dx <= radius; ++dx) {
++				for(int dy = -radius; dy <= radius; ++dy) {
++					for(int dz = -radius; dz <= radius; ++dz) {
++						int blockId = world.getBlockId(x + dx, y + dy, z + dz);
++						if(blockId == Block.leaves.blockID) {
++							int metadata = world.getBlockMetadata(x + dx, y + dy, z + dz);
++							if((metadata & 8) == 0) {
++								world.setBlockMetadata(x + dx, y + dy, z + dz, metadata | 8);
+ 							}
+ 						}
+ 					}
+ 				}
+ 			}
+ 		}
+-
+-	}
+-
+-	public int getBlockTextureFromSideAndMetadata(int var1, int var2) {
+-		return var1 == 1 ? 21 : (var1 == 0 ? 21 : (var2 == 1 ? 116 : (var2 == 2 ? 117 : 20)));
+-	}
+-
+-	protected int damageDropped(int var1) {
+-		return var1;
++	}
++
++	public int getBlockTextureFromSideAndMetadata(int side, int metadata) {
++		boolean isTopOrBottom = (side == 0 || side == 1);
++
++		if (isTopOrBottom) {
++			return topTextureID;
++		}
++		return blockIndexInTexture;
++	}
++
++	protected int damageDropped(int metadata) {
++		return metadata;  // Preserve wood type when dropped
+ 	}
+ }
+--- net/minecraft/src/EntityItem.java
++++ net/minecraft/src/EntityItem.java
+@@ -1,5 +1,7 @@
+ package net.minecraft.src;
+ 
++import net.minecraft.mod.ModBlocks;
++
+ public class EntityItem extends Entity {
+ 	public ItemStack item;
+ 	private int field_803_e;
+@@ -111,7 +113,7 @@
+ 		if(!this.worldObj.multiplayerWorld) {
+ 			int var2 = this.item.stackSize;
+ 			if(this.delayBeforeCanPickup == 0 && var1.inventory.addItemStackToInventory(this.item)) {
+-				if(this.item.itemID == Block.wood.blockID) {
++				if(this.item.itemID == Block.wood.blockID || this.item.itemID == ModBlocks.birchLog.blockID || this.item.itemID == ModBlocks.spruceLog.blockID) {
+ 					var1.triggerAchievement(AchievementList.mineWood);
+ 				}
+ 
+--- net/minecraft/src/ItemFood.java
++++ net/minecraft/src/ItemFood.java
+@@ -8,7 +8,7 @@
+ 		super(var1);
+ 		this.healAmount = var2;
+ 		this.isWolfsFavoriteMeat = var3;
+-		this.maxStackSize = 1;
++		this.maxStackSize = 64;
+ 	}
+ 
+ 	public ItemStack onItemRightClick(ItemStack var1, World var2, EntityPlayer var3) {
+--- net/minecraft/src/CraftingManager.java
++++ net/minecraft/src/CraftingManager.java
+@@ -1,5 +1,7 @@
+ package net.minecraft.src;
+ 
++import net.minecraft.mod.ModBlocks;
++
+ import java.util.ArrayList;
+ import java.util.Collections;
+ import java.util.HashMap;
+@@ -78,11 +80,13 @@
+ 		this.addRecipe(new ItemStack(Block.pistonBase, 1), new Object[]{"TTT", "#X#", "#R#", Character.valueOf('#'), Block.cobblestone, Character.valueOf('X'), Item.ingotIron, Character.valueOf('R'), Item.redstone, Character.valueOf('T'), Block.planks});
+ 		this.addRecipe(new ItemStack(Block.pistonStickyBase, 1), new Object[]{"S", "P", Character.valueOf('S'), Item.slimeBall, Character.valueOf('P'), Block.pistonBase});
+ 		this.addRecipe(new ItemStack(Item.bed, 1), new Object[]{"###", "XXX", Character.valueOf('#'), Block.cloth, Character.valueOf('X'), Block.planks});
++		ModBlocks.addRecipes(this);
++
+ 		Collections.sort(this.recipes, new RecipeSorter(this));
+ 		System.out.println(this.recipes.size() + " recipes");
+ 	}
+ 
+-	void addRecipe(ItemStack var1, Object... var2) {
++	public void addRecipe(ItemStack var1, Object... var2) {
+ 		String var3 = "";
+ 		int var4 = 0;
+ 		int var5 = 0;
+--- net/minecraft/client/Minecraft.java
++++ net/minecraft/client/Minecraft.java
+@@ -8,6 +8,8 @@
+ import java.awt.Frame;
+ import java.awt.Graphics;
+ import java.io.File;
++
++import net.minecraft.mod.LogWindow;
+ import net.minecraft.src.AchievementList;
+ import net.minecraft.src.AxisAlignedBB;
+ import net.minecraft.src.Block;
+@@ -101,6 +103,7 @@
+ import org.lwjgl.opengl.DisplayMode;
+ import org.lwjgl.opengl.GL11;
+ import org.lwjgl.util.glu.GLU;
++import sun.rmi.runtime.Log;
+ 
+ public abstract class Minecraft implements Runnable {
+ 	public static byte[] field_28006_b = new byte[10485760];
+@@ -164,7 +167,10 @@
+ 	long systemTime = System.currentTimeMillis();
+ 	private int joinPlayerCounter = 0;
+ 
+-	public Minecraft(Component var1, Canvas var2, MinecraftApplet var3, int var4, int var5, boolean var6) {
++	public Minecraft(Component var1, Canvas var2, MinecraftApplet var3, int var4, int var5, boolean var6)
++	{
++		new LogWindow();
++
+ 		StatList.func_27360_a();
+ 		this.tempDisplayHeight = var5;
+ 		this.fullscreen = var6;
+@@ -177,12 +183,12 @@
+ 		if(var3 == null || "true".equals(var3.getParameter("stand-alone"))) {
+ 			this.hideQuitButton = false;
+ 		}
+-
+ 		theMinecraft = this;
+ 	}
+ 
+ 	public void onMinecraftCrash(UnexpectedThrowable var1) {
+ 		this.hasCrashed = true;
++		var1.exception.printStackTrace();
+ 		this.displayUnexpectedThrowable(var1);
+ 	}
+ 
+@@ -454,7 +460,9 @@
+ 				if(this.downloadResourcesThread != null) {
+ 					this.downloadResourcesThread.closeMinecraft();
+ 				}
+-			} catch (Exception var9) {
++			} catch (Exception var9)
++			{
++				var9.printStackTrace();
+ 			}
+ 
+ 			System.out.println("Stopping!");
+@@ -462,11 +470,13 @@
+ 			try {
+ 				this.changeWorld1((World)null);
+ 			} catch (Throwable var8) {
++				var8.printStackTrace();
+ 			}
+ 
+ 			try {
+ 				GLAllocation.deleteTexturesAndDisplayLists();
+ 			} catch (Throwable var7) {
++				var7.printStackTrace();
+ 			}
+ 
+ 			this.sndManager.closeMinecraft();
+@@ -1053,7 +1063,7 @@
+ 													this.thePlayer.dropCurrentItem();
+ 												}
+ 
+-												if(this.isMultiplayerWorld() && Keyboard.getEventKey() == this.gameSettings.keyBindChat.keyCode) {
++												if(Keyboard.getEventKey() == this.gameSettings.keyBindChat.keyCode) {
+ 													this.displayGuiScreen(new GuiChat());
+ 												}
+ 											}
+@@ -1499,7 +1509,8 @@
+ 		return this.thePlayer instanceof EntityClientPlayerMP ? ((EntityClientPlayerMP)this.thePlayer).sendQueue : null;
+ 	}
+ 
+-	public static void main(String[] var0) {
++	public static void main(String[] var0)
++	{
+ 		String var1 = null;
+ 		String var2 = null;
+ 		var1 = "Player" + System.currentTimeMillis() % 1000L;
+--- net/minecraft/src/Session.java
++++ net/minecraft/src/Session.java
+@@ -1,5 +1,7 @@
+ package net.minecraft.src;
+ 
++import net.minecraft.mod.ModBlocks;
++
+ import java.util.ArrayList;
+ import java.util.List;
+ 
+@@ -43,5 +45,9 @@
+ 		registeredBlocksList.add(Block.bookShelf);
+ 		registeredBlocksList.add(Block.tnt);
+ 		registeredBlocksList.add(Block.obsidian);
++		registeredBlocksList.add(ModBlocks.birchLog);
++		registeredBlocksList.add(ModBlocks.spruceLog);
++		registeredBlocksList.add(ModBlocks.birchPlanks);
++		registeredBlocksList.add(ModBlocks.sprucePlanks);
+ 	}
+ }
+--- net/minecraft/src/FurnaceRecipes.java
++++ net/minecraft/src/FurnaceRecipes.java
+@@ -1,5 +1,8 @@
+ package net.minecraft.src;
+ 
++import net.minecraft.mod.ModBlocks;
++import net.minecraft.mod.ModItems;
++
+ import java.util.HashMap;
+ import java.util.Map;
+ 
+@@ -22,6 +25,10 @@
+ 		this.addSmelting(Item.clay.shiftedIndex, new ItemStack(Item.brick));
+ 		this.addSmelting(Block.cactus.blockID, new ItemStack(Item.dyePowder, 1, 2));
+ 		this.addSmelting(Block.wood.blockID, new ItemStack(Item.coal, 1, 1));
++		this.addSmelting(ModBlocks.birchLog.blockID, new ItemStack(Item.coal, 1,1));
++		this.addSmelting(ModBlocks.spruceLog.blockID, new ItemStack(Item.coal, 1,1));
++		this.addSmelting(ModItems.chickenRaw.shiftedIndex, new ItemStack(ModItems.chickenCooked));
++		this.addSmelting(ModItems.muttonRaw.shiftedIndex, new ItemStack(ModItems.muttonCooked));
+ 	}
+ 
+ 	public void addSmelting(int var1, ItemStack var2) {
+--- /dev/null
++++ net/minecraft/mod/ModItems.java
+@@ -1,0 +1,12 @@
++package net.minecraft.mod;
++
++import net.minecraft.src.ItemFood;
++
++public class ModItems
++{
++    public static final ItemFood chickenRaw = (ItemFood) new ItemFood(104, 2, true).setItemName("rawChicken").setIconIndex(101);
++    public static final ItemFood chickenCooked = (ItemFood) new ItemFood(105, 5, true).setItemName("cookedChicken").setIconIndex(102);
++    public static final ItemFood muttonRaw = (ItemFood) new ItemFood(106, 2, true).setItemName("rawMutton").setIconIndex(105);
++    public static final ItemFood muttonCooked = (ItemFood) new ItemFood(107, 5, true).setItemName("rawMutton").setIconIndex(106);
++
++}
+--- net/minecraft/src/BlockFire.java
++++ net/minecraft/src/BlockFire.java
+@@ -1,5 +1,7 @@
+ package net.minecraft.src;
+ 
++import net.minecraft.mod.ModBlocks;
++
+ import java.util.Random;
+ 
+ public class BlockFire extends Block {
+@@ -13,9 +15,13 @@
+ 
+ 	public void initializeBlock() {
+ 		this.setBurnRate(Block.planks.blockID, 5, 20);
++		this.setBurnRate(ModBlocks.birchPlanks.blockID, 5, 20);
++		this.setBurnRate(ModBlocks.sprucePlanks.blockID, 5, 20);
+ 		this.setBurnRate(Block.fence.blockID, 5, 20);
+ 		this.setBurnRate(Block.stairCompactPlanks.blockID, 5, 20);
+ 		this.setBurnRate(Block.wood.blockID, 5, 5);
++		this.setBurnRate(ModBlocks.birchLog.blockID, 5, 5);
++		this.setBurnRate(ModBlocks.spruceLog.blockID, 5, 5);
+ 		this.setBurnRate(Block.leaves.blockID, 30, 60);
+ 		this.setBurnRate(Block.bookShelf.blockID, 30, 20);
+ 		this.setBurnRate(Block.tnt.blockID, 15, 100);
+--- net/minecraft/src/WorldGenForest.java
++++ net/minecraft/src/WorldGenForest.java
+@@ -1,5 +1,7 @@
+ package net.minecraft.src;
+ 
++import net.minecraft.mod.ModBlocks;
++
+ import java.util.Random;
+ 
+ public class WorldGenForest extends WorldGenerator {
+@@ -21,6 +23,12 @@
+ 					var9 = 2;
+ 				}
+ 
++				boolean isBirch;
++				if (var9 == 2)
++				{
++					isBirch = true;
++				}
++
+ 				for(var10 = var3 - var9; var10 <= var3 + var9 && var7; ++var10) {
+ 					for(var11 = var5 - var9; var11 <= var5 + var9 && var7; ++var11) {
+ 						if(var8 >= 0 && var8 < 128) {
+@@ -62,7 +70,7 @@
+ 					for(var16 = 0; var16 < var6; ++var16) {
+ 						var10 = var1.getBlockId(var3, var4 + var16, var5);
+ 						if(var10 == 0 || var10 == Block.leaves.blockID) {
+-							var1.setBlockAndMetadata(var3, var4 + var16, var5, Block.wood.blockID, 2);
++							var1.setBlockAndMetadata(var3, var4 + var16, var5, ModBlocks.birchLog.blockID, 2);
+ 						}
+ 					}
+ 
+--- net/minecraft/src/ShapelessRecipes.java
++++ net/minecraft/src/ShapelessRecipes.java
+@@ -8,46 +8,74 @@
+ 	private final ItemStack recipeOutput;
+ 	private final List recipeItems;
+ 
+-	public ShapelessRecipes(ItemStack var1, List var2) {
+-		this.recipeOutput = var1;
+-		this.recipeItems = var2;
++	public ShapelessRecipes(ItemStack output, List items) {
++		this.recipeOutput = output;
++		this.recipeItems = items;
+ 	}
+ 
+ 	public ItemStack getRecipeOutput() {
+ 		return this.recipeOutput;
+ 	}
+ 
+-	public boolean matches(InventoryCrafting var1) {
+-		ArrayList var2 = new ArrayList(this.recipeItems);
+-
+-		for(int var3 = 0; var3 < 3; ++var3) {
+-			for(int var4 = 0; var4 < 3; ++var4) {
+-				ItemStack var5 = var1.func_21103_b(var4, var3);
+-				if(var5 != null) {
+-					boolean var6 = false;
+-					Iterator var7 = var2.iterator();
+-
+-					while(var7.hasNext()) {
+-						ItemStack var8 = (ItemStack)var7.next();
+-						if(var5.itemID == var8.itemID && (var8.getItemDamage() == -1 || var5.getItemDamage() == var8.getItemDamage())) {
+-							var6 = true;
+-							var2.remove(var8);
+-							break;
++	public boolean matches(InventoryCrafting inv) {
++		ArrayList remainingItems = new ArrayList(this.recipeItems);
++
++		for(int row = 0; row < 3; ++row) {
++			for(int col = 0; col < 3; ++col) {
++				ItemStack gridStack = inv.func_21103_b(col, row);
++
++				if(gridStack != null) {
++					boolean matchFound = false;
++					Iterator iter = remainingItems.iterator();
++
++					while(iter.hasNext()) {
++						ItemStack recipeStack = (ItemStack)iter.next();
++						// Check both ID and metadata (if metadata is not -1)
++						if(gridStack.itemID == recipeStack.itemID) {
++							if(recipeStack.getItemDamage() == -1 ||
++									gridStack.getItemDamage() == recipeStack.getItemDamage()) {
++								matchFound = true;
++								iter.remove();
++								break;
++							}
+ 						}
+ 					}
+ 
+-					if(!var6) {
++					if(!matchFound) {
+ 						return false;
+ 					}
+ 				}
+ 			}
+ 		}
+ 
+-		return var2.isEmpty();
++		return remainingItems.isEmpty();
+ 	}
+ 
+-	public ItemStack getCraftingResult(InventoryCrafting var1) {
+-		return this.recipeOutput.copy();
++	public ItemStack getCraftingResult(InventoryCrafting inv) {
++		// Copy metadata from first matching ingredient if recipe output's metadata is -1
++		if(recipeOutput.getItemDamage() == -1) {
++			for(int row = 0; row < 3; ++row) {
++				for(int col = 0; col < 3; ++col) {
++					ItemStack gridStack = inv.func_21103_b(col, row);
++					if(gridStack != null) {
++						// Find matching recipe item
++						for(Object obj : recipeItems) {
++							ItemStack recipeStack = (ItemStack)obj;
++							if(gridStack.itemID == recipeStack.itemID) {
++								// Create new output with matching metadata
++								return new ItemStack(
++										recipeOutput.itemID,
++										recipeOutput.stackSize,
++										gridStack.getItemDamage()
++								);
++							}
++						}
++					}
++				}
++			}
++		}
++
++		return recipeOutput.copy();
+ 	}
+ 
+ 	public int getRecipeSize() {
